@@ -1,0 +1,20 @@
+{
+"manifest_version": 2,
+  "name": "powerTabber",
+  // "background": {
+  //   "scripts": ["js/historyTracker.js", "js/lib/underscore.js"]
+  // },
+  "permissions": [
+  	"tabs",
+  	"storage",
+    "background",
+    "<all_urls>"
+  ],
+  "version": "0.1",
+  "description": "a tab manager for power users",
+  "browser_action": {
+    "default_title": "PowerTabber",
+    "default_icon": "img/favicon.png",
+    "default_popup": "index.html"
+  }
+}

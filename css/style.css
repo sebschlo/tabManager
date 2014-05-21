@@ -1,0 +1,229 @@
+/*
+ * 
+ * GENERAL AND HELPERS
+ *
+ */
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 700px;
+    font-family: 'Actor', sans-serif;
+}
+
+ol, ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 10pt;
+}
+
+ol li ol, ol li ul, ul li ol, ul li ul {
+    margin: 0;
+}
+
+.truncate {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inline {
+    display: inline-block;
+}
+
+/*.arrows {
+    display: block;
+    margin-top: auto;
+    margin-bottom: auto;
+}*/
+
+.content {
+    overflow: auto;
+}
+
+.headerButtons {
+    padding-top: 6px;
+    margin-left: 30px;
+    margin-right: 0px !important;
+
+}
+
+.faviconImage {
+    max-width: 16px;
+}
+
+/*
+ * 
+ * WINDOW PANES ON THE LIST VIEW
+ *
+ */
+
+
+.window {
+    /*margin: 0 10px;*/
+    position: relative;
+    background-color: #E7FAFF;
+    border: 1px solid #D9EBF0;
+    opacity: 80%;
+    -moz-border-radius:     5px;
+    -webkit-border-radius:  5px;
+    border-radius:          5px;
+}
+
+.window:hover {
+    background-color: #EAFCF1;
+}
+
+.window#new-window {
+    min-height: 100px;
+    background-color: #EEE;
+    border-color: #e8e8e8;
+}
+
+.window#new-window:hover {
+    background-color: #f3f3f3;
+}
+
+.window-header {
+    padding: 5px;
+    /*text-align: center;*/
+/*    font-size: 9pt;*/
+    color: white;
+    background-color: #008CBA;
+    border: 1px solid #2284a1;
+    -moz-border-radius:     5px 5px 0 0;
+    -webkit-border-radius:  5px 5px 0 0;
+    border-radius:          5px 5px 0 0;
+}
+
+#new-window .window-header {
+    background-color: #999;
+    border: 1px solid #777;
+}
+
+#new-window .close-window {
+    display: none;
+}
+
+.close-window {
+    float: right;
+    padding: 0 5px;
+    margin-right: 5px;
+}
+
+.close-window:hover{
+    color: red;
+}
+
+#list-view {
+    margin: 10px;
+}
+
+#list-view li ul li{
+    font-size: 8pt;
+}
+
+#list-view .faviconImage {
+    padding-top: 5px;
+    margin-left: 5px;
+    vertical-align: text-top;
+}
+
+#list-view .title {
+    max-width: 78%;
+    vertical-align: text-top;
+    padding: 5px;
+}
+
+#list-view .title:hover {
+    font-weight: bold;
+}
+
+
+/*
+ * 
+ * TAB PANES ON GRID VIEW
+ *
+ */
+
+#grid-view {
+    padding: 0px;
+    margin-left: 7px;
+    font-size: 8pt;
+}
+
+#grid-view li {
+/*    margin: 10px;
+    padding: 0;*/
+    width: 128px !important;
+    height: 100px !important;
+}
+#grid-view .faviconImage {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#grid-view .screenshot-wrapper {
+    padding: 10px;
+    border: 1px solid #DDD;
+    background-color: #f2f2f2;
+    width: 100%;
+    height: 100%;
+}
+
+#grid-view .screenshot-wrapper:hover {
+    padding: 8px;
+    border: 3px solid #DDD;
+}
+
+
+
+/*
+ * 
+ * LISTS ON THE RIGHT AREA
+ *
+ */
+
+
+.tab-list {
+    /*position: fixed;*/
+    height: 100%;
+    background-color: #303030;
+    color: #CCC;
+    padding: 0;
+}
+
+.tab-list-names li {
+    padding: 5px 5px 5px 10px;
+    border-bottom: 1px solid #202020;
+    width: 100%;
+}
+
+.tab-list-names li:hover {
+    -moz-box-shadow: inner 0 0 10px #202020;
+    -webkit-box-shadow: inner 0 0 10px #202020;
+    box-shadow: inset 0 0 10px #202020;
+}
+
+.delete-category {
+    position: absolute;
+    right: 10px;
+    margin-right: 5px;
+    /*margin-left: 0px;*/
+}
+
+.delete-category:hover {
+    color: red;
+}
+
+.new-list {
+    position: absolute;
+    bottom: 0;
+    margin: 0;
+    width: 100%;
+}

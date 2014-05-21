@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='css/foundation.min.css'>
+    <link rel='stylesheet' type='text/css' href='css/style.css'>
+
+  </head>
+
+  <body>
+    <div id="main-div" class="row">
+        <!-- MAIN SCREEN AREA -->
+        <div class="small-9 columns">
+            <!-- HEADER AREA -->
+            <div class='row pageHead'>
+                <div class="small-7 columns">
+                    <h2>PowerTabber</h2>
+                </div>
+                <div class="small-5 columns button-bar">
+                    <ul class="button-group headerButtons">
+                        <li><a href='#' id="list-mode" class="small button">List</a></li>
+                        <li><a href='#' id="grid-mode" class="small button">Grid</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- CONTENT AREA -->
+            <div class="row content">
+                <ul id="list-view" class="small-block-grid-4">
+                    <li>
+                        <div class='window' id='new-window'>
+                            <div class='window-header'>
+                                <span class='window-title'>New Window</span>
+                                <span class='close-window'>&#215;</span>
+                            </div>
+                            <ul class='window-tabs'>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <ul id="grid-view" class="small-block-grid-4"></ul>
+            </div>
+
+        </div>
+
+        <!-- LISTS AREA -->       
+        <div class="small-3 columns tab-list">
+            <ul id='tab-categories' class='tab-list-names'>
+                <li id='open'>Open</li>
+                <li id='snoozeButton'><a href="#" data-reveal-id="snoozeModal">SNOOZE</a></li>
+            </ul>
+            <a href='#' id="createCategory" class='small button new-list'>New List</a>
+        </div>
+    </div>
+    
+    <!-- SNOOZE SCREEN -->
+    <div id="snoozeModal" class="reveal-modal" data-reveal>
+        <h2>Snooze tab for later!</h2>
+        <p class="lead">When should your tab come back to Chrome?</p>
+        <ul class="button-group">
+            <li><a id="later" href='#' class="small button">Later</a></li>
+            <li><a id="tonight" href='#' class="small button">Tonight</a></li>
+            <li><a id="tomorrow" href='#' class="small button">Tomorrow</a></li>
+            <li><a id="weekend" href='#' class="small button">Weekend</a></li>
+            <li><a id="nxtWeek" href='#' class="small button">Next Week</a></li>
+            <li><a id="nxtMonth" href='#' class="small button">Next Month</a></li>
+        </ul>
+        <a id="snoozeExit" class="close-reveal-modal">&#215;</a>
+    </div>
+
+
+  </body>
+
+    <script src='js/lib/jquery.js'></script>
+    <script src='js/lib/jquery-ui.js'></script>
+    <script src='js/lib/handlebars.js'></script>
+    <script src='js/lib/underscore.js'></script>
+    <script src='js/lib/backbone.js'></script>
+    <script src='js/lib/backbone.localStorage.js'></script>
+    <script src='js/lib/foundation.min.js'></script>
+
+    <script src="js/tabcontrol.js"></script>
+    <script src="js/ui.js"></script>
+</html>

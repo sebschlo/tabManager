@@ -1,0 +1,164 @@
+/* 
+/* ===================================================================
+ *                          GLOBAL VARIABLES
+ * =================================================================== */
+
+var openTabs = new Array();
+var categories = new Array();
+var currSelectedTab;
+
+/* ===================================================================
+ *                          TABS CONTROL
+ * =================================================================== */
+
+function createTab(url) {
+  console.log("creating tab");
+  console.log(url);
+  chrome.tabs.create({'url': url});
+}
+
+function createTabNewWindow(url, windowId) {
+  console.log("creating tab in new window");
+  console.log(url);
+  chrome.tabs.create({'url': url, 'windowId': windowId});
+}
+
+function postOpenTabs() {
+  for (i = 0; i < openTabs.length; i++) {
+    // adding "open" property to each of the openTabs
+    openTabs[i]["open"] = true;
+    console.log(openTabs[i].id)
+    console.debug(openTabs[i]);
+  }
+  chrome.storage.sync.set({'open': openTabs}, function() {
+    // doing nothing after we set
+  });
+}
+
+// get open tabs - search through chrome and look at 'open' key 
+function getOpenTabs() {
+  chrome.storage.sync.get('open', function(data){
+    console.debug(data);
+  }); 
+}
+
+function debugOpenTabs() {
+  console.debug("Open Tabs: " + openTabs);
+}
+
+// Get all the currently open tabs 
+function getCurrTabs() {
+  chrome.tabs.query({}, function(tabs) {
+    for (var i = 0; i < tabs.length; i++) {
+       openTabs[i] = tabs[i];
+    }
+
+    for (i = 0; i < openTabs.length; i++) {
+      // adding "open" property to each of the openTabs
+      openTabs[i]["open"] = true;
+    }
+    // getTabScreenshot(openTabs);
+  });
+  // return currOpen;
+}
+
+function postTabs(key) {
+  console.debug("key: " + key + " open tabs: " + openTabs);
+  chrome.storage.sync.set({'curr': openTabs}, function() {});
+}
+
+function getTabs(key) {
+  console.debug("keyword is: " + key);
+  chrome.storage.sync.get(key, function(data){
+    console.debug(data);
+  });
+}
+
+function clear() {
+  chrome.storage.sync.clear();
+}
+
+/* ===================================================================
+ *                        CATEGORIES CONTROL
+ * =================================================================== */
+
+/* 
+ * categories will always be stored in chrome.storage with key of 'categories'
+ * WILL BE DEPRECATED SOON
+ */
+function createCategory(newCategory) {
+  var categories = new Array();
+  chrome.storage.sync.get('categories', function(cat){
+    if(!_.isEmpty(cat)) {
+      console.debug(cat.categories);
+      categories = cat.categories;
+    }
+    categories.push(newCategory);
+    chrome.storage.sync.set({'categories': categories}, function(){});
+  });
+  // console.debug('added category. category array is now: ' + categories);
+}
+
+function getCatList(callback) {
+  chrome.storage.sync.get('categories', function(cat){
+    callback(cat);
+  });
+}
+
+// function createCategory(category) {
+//   categories.category = new Array(); 
+//   console.debug('added category. category array is now: ' + categories);
+// }
+
+function addTabToCategory(category, tabId) {
+  chrome.storage.sync.get(category, function(curr){ // category is specific...
+    // category is empty, no tabs have been placed in it yet - initialize array
+    console.debug(curr);
+    if(_.isEmpty(curr)) {
+      console.debug('first entry');
+      curr = new Array(); 
+    }
+    else {
+      console.debug('not first entry');
+      console.debug('currently: ')
+      console.debug(curr);
+      curr = curr[category];
+    }
+    curr.push(tabId);
+
+    pair = {};
+    pair[category] = curr;
+
+    console.debug('pair is: ' + pair);
+    // console.debug("tabId added: " + tabId)
+    // console.debug("now category: " + category + " | is: " + curr);
+    chrome.storage.sync.set(pair, function(){});
+  });
+}
+
+function deleteCategory(category) {
+  chrome.storage.sync.get(category, function(curr) {
+    console.debug("before delete, curr is: ");
+    console.debug(curr);
+
+    chrome.storage.sync.remove(category);
+
+    // test to see if we have removed:
+    chrome.storage.sync.get(category, function(curr) {
+      console.debug("after delete, curr is: ");
+      console.debug(curr);
+    });
+  });
+
+  // remove current category from 'all categories' list
+  chrome.storage.sync.get('categories', function(categories) {
+    var i = categories.categories.indexOf(category);
+    if (i != -1) {
+      categories.categories.splice(i, 1);
+      chrome.storage.sync.set({'categories' : categories.categories });
+    }
+    else {
+      console.debug("BIG ERROR.");
+    }
+  });
+}
