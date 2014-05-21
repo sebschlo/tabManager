@@ -1,13 +1,9 @@
 {
 "manifest_version": 2,
   "name": "powerTabber",
-  // "background": {
-  //   "scripts": ["js/historyTracker.js", "js/lib/underscore.js"]
-  // },
   "permissions": [
   	"tabs",
   	"storage",
-    "background",
     "<all_urls>"
   ],
   "version": "0.1",

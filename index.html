@@ -1,11 +1,17 @@
 <html>
-  <head>
-    <link rel='stylesheet' type='text/css' href='css/foundation.min.css'>
-    <link rel='stylesheet' type='text/css' href='css/style.css'>
+<head>
+    <meta charset="utf-8">
 
-  </head>
+    <link rel='stylesheet' href='css/normalize.css'>
+    <link rel='stylesheet' href='css/foundation.min.css'>
+    <link rel='stylesheet' href='css/style.css'>
 
-  <body>
+    <script src='js/modernizr.js'></script>
+
+</head>
+
+<body>
+
     <div id="main-div" class="row">
         <!-- MAIN SCREEN AREA -->
         <div class="small-9 columns">
@@ -23,7 +29,7 @@
             </div>
             
             <!-- CONTENT AREA -->
-            <div class="row content">
+            <div class="content">
                 <ul id="list-view" class="small-block-grid-4">
                     <li>
                         <div class='window' id='new-window'>
@@ -45,7 +51,7 @@
         <div class="small-3 columns tab-list">
             <ul id='tab-categories' class='tab-list-names'>
                 <li id='open'>Open</li>
-                <li id='snoozeButton'><a href="#" data-reveal-id="snoozeModal">SNOOZE</a></li>
+                <li id='snoozeButton'>SNOOZE</li>
             </ul>
             <a href='#' id="createCategory" class='small button new-list'>New List</a>
         </div>
@@ -67,16 +73,19 @@
     </div>
 
 
-  </body>
-
+    <!-- SCRIPTS -->
     <script src='js/lib/jquery.js'></script>
     <script src='js/lib/jquery-ui.js'></script>
-    <script src='js/lib/handlebars.js'></script>
+<!--         <script src='js/lib/handlebars.js'></script>
     <script src='js/lib/underscore.js'></script>
     <script src='js/lib/backbone.js'></script>
-    <script src='js/lib/backbone.localStorage.js'></script>
+    <script src='js/lib/backbone.localStorage.js'></script> -->
     <script src='js/lib/foundation.min.js'></script>
+    <script>
+        $(document).foundation();
+    </script>
 
     <script src="js/tabcontrol.js"></script>
     <script src="js/ui.js"></script>
+</body>
 </html>

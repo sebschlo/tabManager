@@ -1,7 +1,7 @@
 /* global chrome */
 /*jslint browser: true, devel: true, sloppy: true */
 
-
+// Make extension open in new window
 // chrome.browserAction.onClicked.addListener(function(tab) {
 //   chrome.tabs.create({url: chrome.extension.getURL('index.html')});
 // });

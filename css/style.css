@@ -43,6 +43,7 @@ ol li ol, ol li ul, ul li ol, ul li ul {
 
 .content {
     overflow: auto;
+    height: 410px;
 }
 
 .headerButtons {
@@ -90,8 +91,6 @@ ol li ol, ol li ul, ul li ol, ul li ul {
 
 .window-header {
     padding: 5px;
-    /*text-align: center;*/
-/*    font-size: 9pt;*/
     color: white;
     background-color: #008CBA;
     border: 1px solid #2284a1;
@@ -119,9 +118,6 @@ ol li ol, ol li ul, ul li ol, ul li ul {
     color: red;
 }
 
-#list-view {
-    margin: 10px;
-}
 
 #list-view li ul li{
     font-size: 8pt;
@@ -152,13 +148,10 @@ ol li ol, ol li ul, ul li ol, ul li ul {
 
 #grid-view {
     padding: 0px;
-    margin-left: 7px;
     font-size: 8pt;
 }
 
 #grid-view li {
-/*    margin: 10px;
-    padding: 0;*/
     width: 128px !important;
     height: 100px !important;
 }
@@ -169,19 +162,28 @@ ol li ol, ol li ul, ul li ol, ul li ul {
 }
 
 #grid-view .screenshot-wrapper {
-    padding: 10px;
-    border: 1px solid #DDD;
-    background-color: #f2f2f2;
+    padding: 4px;
+    text-align: center;
+    color: white;
     width: 100%;
     height: 100%;
+    background-color: rgba(1,1,1,0.65);
+    height: 50%;
+    top: 40px;
 }
 
-#grid-view .screenshot-wrapper:hover {
-    padding: 8px;
-    border: 3px solid #DDD;
+.screenshot {
+    height: 100%;
+    border: 1px solid #DDD;
+    background-size: contain;
+    background-color: #f2f2f2;
 }
 
-
+.screenshot:hover {
+    -moz-box-shadow: outer 0 0 10px #202020;
+    -webkit-box-shadow: outer 0 0 10px #202020;
+    box-shadow: inset 0 0 10px #202020;
+}
 
 /*
  * 
@@ -191,7 +193,6 @@ ol li ol, ol li ul, ul li ol, ul li ul {
 
 
 .tab-list {
-    /*position: fixed;*/
     height: 100%;
     background-color: #303030;
     color: #CCC;

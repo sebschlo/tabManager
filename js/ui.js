@@ -3,47 +3,47 @@ $(document).ready(function() {
   populateCategories();
   handleAddCategories();
 
-    /* 
-     * Button Functionality
-     */
+  /* 
+   * Button Functionality
+   */
 
-    // GRID/LIST VIEWS
-    $('#grid-mode').click(function() {
-      $('#grid-view').css('display', 'block');
-      $('#list-view').css('display', 'none');
-    });
-    $('#list-mode').click(function() {
-      $('#list-view').css('display', 'block');
-      $('#grid-view').css('display', 'none');
-    });
-
-    // NEW WINDOW
-    $('#new-window').click(function() {
-      chrome.windows.create({});
-    });
-
-
-    // categories event handlers
-    // NEED TO CHECK IF WE ALREADY HAVE A INPUT NEWLINE...
-    $("#createCategory").click(function() {
-      var path = "<input type='text' id='newCategory' placeholder='new category'/>";
-      $("#tab-categories li:last-child").after(path);
-      saveNewCategory();
-    });
-
-    // $("#snoozeButton").click(function() {
-    //   $("#snoozeModal").foundation('reveal', 'open');
-    // });
-
-    // $("#snoozeExit").click(function() {
-    //   $("#snoozeModal").foundation('reveal','close');
-    // });
-
-    // $("#nxtMonth").click(function(){
-    //   clear();
-    // });
-
+  // GRID/LIST VIEWS
+  $('#grid-mode').click(function() {
+    $('#grid-view').css('display', 'block');
+    $('#list-view').css('display', 'none');
   });
+  $('#list-mode').click(function() {
+    $('#list-view').css('display', 'block');
+    $('#grid-view').css('display', 'none');
+  });
+
+  // NEW WINDOW
+  $('#new-window').click(function() {
+    chrome.windows.create({});
+  });
+
+
+  // categories event handlers
+  // NEED TO CHECK IF WE ALREADY HAVE A INPUT NEWLINE...
+  $("#createCategory").click(function() {
+    var path = "<input type='text' id='newCategory' placeholder='new category'/>";
+    $("#tab-categories li:last-child").after(path);
+    saveNewCategory();
+  });
+
+  $("#snoozeButton").click(function() {
+    $("#snoozeModal").foundation('reveal', 'open');
+  });
+
+  // $("#snoozeExit").click(function() {
+  //   $("#snoozeModal").foundation('reveal','close');
+  // });
+
+  // $("#nxtMonth").click(function(){
+  //   clear();
+  // });
+
+});
 
 /* ===================================================================
  *                          LISTS
@@ -156,13 +156,16 @@ function saveNewCategory() {
 SHOWS THE APPROPRIATE SCREENSHOTS */
 
 function screenshotApply() {
+  // Go to clicked tab
   $(".screenshot-wrapper").click(function() {
     var tabId = parseInt($(this).attr('tabId'));
-    chrome.tabs.update(tabId, {selected: true});
+    var winId = parseInt($(this).attr('windowId'));
+    chrome.tabs.update(tabId, {active: true});
+    chrome.windows.update(winId, {focused: true});
   });
 
-  // Close window groups
-  // TODO: Add an are you sure alert here
+  // Close window button
+  //TODO: Add an are you sure alert here
   $(".close-window").click(function() {
     var currWindow = $(this).parent().parent();
     var windowId = currWindow.attr('windowid');
@@ -178,12 +181,17 @@ function screenshotApply() {
       $(this).css('opacity', 0.5);
     },
     stop: function(event, ui) {
-      $(this).css('z-index', 0);
-      $(this).css('opacity', 1);
+      if (dropped==true) {
+        // $(this).remove();
+      } else {
+        $(this).css('z-index', 0);
+        $(this).css('opacity', 1);
+      }
     },
     revert: "invalid",
     revertDuration: 200,
-    scroll: false
+    scroll: false,
+    appendTo: 'body'
   });
 
   // drop tabs to other windows
@@ -195,7 +203,7 @@ function screenshotApply() {
       var tabId = parseInt(draggable.attr('tabId'));
 
       // update chrome
-      // if dropped into the new window
+      // if dropped into the NEW WINDOW
       var currWindow = $(this);
       if(currWindow.attr('id') === 'new-window') {
         chrome.storage.sync.get(tabId.toString(), function(tab) {
@@ -205,7 +213,7 @@ function screenshotApply() {
         });
 
         // Move tab
-        chrome.windows.create({tabId: tabId});
+        chrome.windows.create({tabId: tabId, focused: false});
 
         // convert this "new window div" to a regular window div
         var newWindowHtml = currWindow.parent().html();
@@ -227,53 +235,45 @@ function screenshotApply() {
       draggable.parent().remove();
       toWindow.children(".window-tabs").append('<li>'+draggable.html()+'</li>');
 
-      screenshotApply();
+      populateTabExpose();
     }
   });
 
-$('.panel').mouseup(function() {
-  currSelectedTab = $(this).attr('tabid');
-  console.debug(currSelectedTab);
-});
-
-makeDroppable();
-}
-
-function makeDroppable() {
+  // DROP TABS TO LISTS
   $(".tab-list li").droppable({
     drop: function(event, ui) {
 
-          // add this tag to the list
-          var category = $(this).attr('id');
-          var draggable = $(ui.draggable);
-          var tabId = draggable.attr('tabId');
+      // add this tag to the list
+      var category = $(this).attr('id');
+      var draggable = $(ui.draggable);
+      var tabId = draggable.attr('tabId');
 
-          // If tab is dropped over snooze button, show modal
-          if ($(this).attr('id') === 'snoozeButton') {
-            $("#snoozeModal").foundation('reveal', 'open');
-          }
+      // If tab is dropped over snooze button, show modal
+      if (category === 'snoozeButton') {
+        $("#snoozeModal").foundation('reveal', 'open');
+      }
 
-          else if ($(this).attr('id') === 'open') {
-            // don't want to do anything in this case 
-          }
+      else if($(this).attr('class') === 'ui-droppable') {
+        addTabToCategory(category, tabId);
+      }
 
-          else if($(this).attr('class') === 'ui-droppable') {
-            addTabToCategory(category, tabId);
-          }
+      else {
+        console.debug($(this).attr('class'));
+        console.debug("missed");
+      }
 
-          else {
-            console.debug($(this).attr('class'));
-            console.debug("missed");
-          }
+      // Get rid of tab on expose
+      draggable.parent().remove();
 
-          // Get rid of tab on expose
-          draggable.parent().remove();
+      // Actually close the tab on chrome
+      chrome.tabs.remove(parseInt(tabId));
+    }
+  });
 
-          // Actually close the tab on chrome
-          chrome.tabs.remove(parseInt(tabId));
-        }
-      });
-
+  $('.panel').mouseup(function() {
+    currSelectedTab = $(this).attr('tabid');
+    console.debug(currSelectedTab);
+  });
 }
 
 /* ===================================================================
@@ -330,7 +330,7 @@ function getListHtmlForTab(tab) {
     return html;
   }); */
   var faviconUrl = getFaviconUrl(tab);
-  var html = '<li><div class="screenshot-wrapper" tabId='+tab.id+'><img class="faviconImage inline" src="'+faviconUrl+'"><div class="title inline truncate">' + tab.title.substring(0,30) + '</div></div></li>';
+  var html = '<li><div class="screenshot-wrapper" tabId='+tab.id+' windowId='+tab.windowId+'><img class="faviconImage inline" src="'+faviconUrl+'"><div class="title inline truncate">' + tab.title.substring(0,30) + '</div></div></li>';
   return html;
 }
 
@@ -344,7 +344,7 @@ function getGridHtml(tabs) {
 
 function getGridHtmlForTab(tab) {
   var faviconUrl = getFaviconUrl(tab);
-  var html = '<li><div class="screenshot-wrapper truncate" tabId='+tab.id+'><img class="faviconImage inline" src="'+faviconUrl+'">' + tab.title.substring(0,30) + '</div></li>';
+  var html = '<li><div class="screenshot" style="background-image:url('+getScreenshotUrl(tab)+');"><div class="screenshot-wrapper truncate" tabId='+tab.id+' windowId='+tab.windowId+'><img class="faviconImage inline" src="'+faviconUrl+'">' + tab.title.substring(0,30) + '</div></div></li>';
   return html;
 }
 
@@ -357,6 +357,10 @@ function getFaviconUrl(tab) {
     // couldn't obtain favicon as a normal url, try chrome://favicon/url
     return 'chrome://favicon/' + tab.url;
   }
+}
+
+function getScreenshotUrl(tab) {
+  return;// 'http://api.snapito.com/free/mc/' + parseUri(tab.url).host;
 }
 
 function groupByWindow(tabs) {
@@ -373,3 +377,35 @@ function groupByWindow(tabs) {
   return windows;
 }
 
+// parseUri 1.2.2
+// (c) Steven Levithan <stevenlevithan.com>
+// MIT License
+
+function parseUri (str) {
+  var o   = parseUri.options,
+    m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+    uri = {},
+    i   = 14;
+
+  while (i--) uri[o.key[i]] = m[i] || "";
+
+  uri[o.q.name] = {};
+  uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+    if ($1) uri[o.q.name][$1] = $2;
+  });
+
+  return uri;
+};
+
+parseUri.options = {
+  strictMode: false,
+  key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
+  q:   {
+    name:   "queryKey",
+    parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+  },
+  parser: {
+    strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+    loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+  }
+};
