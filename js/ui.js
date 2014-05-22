@@ -19,7 +19,8 @@ $(document).ready(function() {
 
   // NEW WINDOW
   $('#new-window').click(function() {
-    chrome.windows.create({});
+    console.log("whatsup");
+    chrome.windows.create({url: 'google.com'});
   });
 
 
@@ -35,6 +36,10 @@ $(document).ready(function() {
     $("#snoozeModal").foundation('reveal', 'open');
   });
 
+  $(".delete-category").click(function() {
+    $("#deleteCategoryModal").foundation('reveal','open');
+  });
+
   // $("#snoozeExit").click(function() {
   //   $("#snoozeModal").foundation('reveal','close');
   // });
@@ -46,9 +51,10 @@ $(document).ready(function() {
 });
 
 /* ===================================================================
- *                          LISTS
+ *                        LISTS (CATEGORIES)
  * ================================================================= */
- function populateCategories() {
+
+function populateCategories() {
   var currCategories = new Array();
   getCatList(function(cat){
     // i think this will only be the case if we saved cat...
@@ -73,7 +79,7 @@ function handleAddCategories() {
       populateTabExpose();
       $('#list-mode').removeClass('disabled');
     }
-  })
+  });
 }
 
 function addCategoryToPanel(newCategory) {
@@ -90,48 +96,51 @@ function addCategoryToPanel(newCategory) {
 
 function openCategoryTabs(categoryName) {
   var urls           = new Array();
-  chrome.storage.sync.get(categoryName, function(category){
-    console.debug(categoryName);
-    console.debug(category);
-    console.debug(category[categoryName]);
+  // chrome.storage.sync.get(categoryName, function(category){
+  //   console.debug(categoryName);
+  //   console.debug(category);
+  //   console.debug(category[categoryName]);
 
-    var allTabs = category[categoryName];
+  //   var allTabs = category[categoryName];
 
-    chrome.storage.sync.get(allTabs, function(tab) {
-      var tabIndex;
-      for(var i=0; i < allTabs.length; i++) {
-        tabIndex = allTabs[i];
-        urls.push(tab[tabIndex].url);
-      }
-      createTabNewWindow(urls);
-    });
-  });
+  //   chrome.storage.sync.get(allTabs, function(tab) {
+  //     var tabIndex;
+  //     for(var i=0; i < allTabs.length; i++) {
+  //       tabIndex = allTabs[i];
+  //       urls.push(tab[tabIndex].url);
+  //     }
+  //     createTabNewWindow(urls);
+  //   });
+  // });
 }
 
 function showGridView(categoryName) {
-  chrome.storage.sync.get(categoryName, function(category) {
-    var tabIds = category[categoryName];
+  // chrome.storage.sync.get(categoryName, function(category) {
+  //   var tabIds = category[categoryName];
 
-    chrome.storage.sync.get(tabIds, function(tab) {
-      var tabArray = new Array();
-      for (var tabId in tab) {
-        tabArray.push(tab[tabId]);
-      }
-      $('ul#grid-view').html(getGridHtml(tabArray));
-      $('ul#grid-view').css('display', 'block');
-      $('#list-mode').addClass('disabled');
-      $('ul#list-view').css('display', 'none');
-    })
-  });
+  //   chrome.storage.sync.get(tabIds, function(tab) {
+  //     var tabArray = new Array();
+  //     for (var tabId in tab) {
+  //       tabArray.push(tab[tabId]);
+  //     }
+  //     $('ul#grid-view').html(getGridHtml(tabArray));
+  //     $('ul#grid-view').css('display', 'block');
+  //     $('#list-mode').addClass('disabled');
+  //     $('ul#list-view').css('display', 'none');
+  //   })
+  // });
+  console.log("viewing category:"+categoryName);
 }
 
-function removeCategoryfromPanel() {
-  $(".delete-category").click(function() {
-    var category = $(this).parent('li').attr('id');
-    deleteCategory(category);
-    $(this).parent('li').remove();
-  });
-}
+// function removeCategoryfromPanel() {
+//   $(".delete-category").click(function() {
+//     var category = $(this).parent('li').attr('id');
+//     deleteCategory(category);
+//     $(this).parent('li').remove();
+//   });
+// }
+
+
 
 function saveNewCategory() {
   var newCategory = $("#newCategory");
@@ -181,7 +190,7 @@ function screenshotApply() {
       $(this).css('opacity', 0.5);
     },
     stop: function(event, ui) {
-      if (dropped==true) {
+      if (dropped===true) {
         // $(this).remove();
       } else {
         $(this).css('z-index', 0);
@@ -206,11 +215,11 @@ function screenshotApply() {
       // if dropped into the NEW WINDOW
       var currWindow = $(this);
       if(currWindow.attr('id') === 'new-window') {
-        chrome.storage.sync.get(tabId.toString(), function(tab) {
-          var thisTab = tab[tabId];
-          console.log(thisTab);
-          console.log(thisTab.url);
-        });
+        // chrome.storage.sync.get(tabId.toString(), function(tab) {
+        //   var thisTab = tab[tabId];
+        //   console.log(thisTab);
+        //   console.log(thisTab.url);
+        // });
 
         // Move tab
         chrome.windows.create({tabId: tabId, focused: false});
@@ -314,21 +323,6 @@ function getListHtml(windows) {
 }
 
 function getListHtmlForTab(tab) {
-/*  var tabId = tab.id.toString();
-  chrome.storage.sync.get(tabId, function(tab2){
-    console.log(tab);
-   var isItDefined = tab2[tabId]["screenshot"];
-   console.log(isItDefined);
-    if (! isItDefined) {
-      //alert(tabId + " butts " + tab[tabId]["title"]);
-      var faviconUrl = tab2[tabId]["screenshot"];
-    } else {
-      var faviconUrl = getFaviconUrl(tab);
-    //}
-    var html = '<li class="list-tab"><div class="screenshot-wrapper inline" tabId='+tab.id+'><img class="faviconImage inline" src="'+faviconUrl+'"><div class="title inline">' + tab.title + '</div></div></li>';
-    //if yes: faviconUrl = 
-    return html;
-  }); */
   var faviconUrl = getFaviconUrl(tab);
   var html = '<li><div class="screenshot-wrapper" tabId='+tab.id+' windowId='+tab.windowId+'><img class="faviconImage inline" src="'+faviconUrl+'"><div class="title inline truncate">' + tab.title.substring(0,30) + '</div></div></li>';
   return html;
@@ -376,6 +370,11 @@ function groupByWindow(tabs) {
 
   return windows;
 }
+
+
+/* ===================================================================
+ *                       Scripts and Helpers
+ * ================================================================= */
 
 // parseUri 1.2.2
 // (c) Steven Levithan <stevenlevithan.com>

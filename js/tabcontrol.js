@@ -1,3 +1,7 @@
+// FOUNDATION
+$(document).foundation();
+
+
 /* 
 /* ===================================================================
  *                          GLOBAL VARIABLES

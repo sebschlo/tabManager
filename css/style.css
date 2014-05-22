@@ -43,7 +43,8 @@ ol li ol, ol li ul, ul li ol, ul li ul {
 
 .content {
     overflow: auto;
-    height: 410px;
+    height: 420px;
+    padding: 16px;
 }
 
 .headerButtons {
@@ -56,6 +57,10 @@ ol li ol, ol li ul, ul li ol, ul li ul {
 .faviconImage {
     max-width: 16px;
 }
+
+/*.snooze-options li {
+    width: 80px;
+}*/
 
 /*
  * 
