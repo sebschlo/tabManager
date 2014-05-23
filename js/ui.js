@@ -18,10 +18,6 @@ $(document).ready(function() {
   });
 
   // NEW WINDOW
-  $('#new-window').click(function() {
-    console.log("whatsup");
-    chrome.windows.create({url: 'google.com'});
-  });
 
 
   // categories event handlers
@@ -40,9 +36,6 @@ $(document).ready(function() {
     $("#deleteCategoryModal").foundation('reveal','open');
   });
 
-  // $("#snoozeExit").click(function() {
-  //   $("#snoozeModal").foundation('reveal','close');
-  // });
 
   // $("#nxtMonth").click(function(){
   //   clear();
@@ -132,13 +125,13 @@ function showGridView(categoryName) {
   console.log("viewing category:"+categoryName);
 }
 
-// function removeCategoryfromPanel() {
-//   $(".delete-category").click(function() {
-//     var category = $(this).parent('li').attr('id');
-//     deleteCategory(category);
-//     $(this).parent('li').remove();
-//   });
-// }
+function removeCategoryfromPanel() {
+  $(".delete-category").click(function() {
+    var category = $(this).parent('li').attr('id');
+    deleteCategory(category);
+    $(this).parent('li').remove();
+  });
+}
 
 
 
@@ -176,11 +169,12 @@ function screenshotApply() {
   // Close window button
   //TODO: Add an are you sure alert here
   $(".close-window").click(function() {
-    var currWindow = $(this).parent().parent();
-    var windowId = currWindow.attr('windowid');
-    chrome.windows.remove(parseInt(windowId), function() {
-      currWindow.parent().remove();
-    }); 
+    $("#deleteCategoryModal").foundation('reveal','open');
+    // var currWindow = $(this).parent().parent();
+    // var windowId = currWindow.attr('windowid');
+    // chrome.windows.remove(parseInt(windowId), function() {
+    //   currWindow.parent().remove();
+    // }); 
   });
 
   // make tabs draggable
@@ -248,6 +242,15 @@ function screenshotApply() {
     }
   });
 
+  makeDroppable();
+
+  $('.panel').mouseup(function() {
+    currSelectedTab = $(this).attr('tabid');
+    console.debug(currSelectedTab);
+  });
+}
+
+function makeDroppable() {
   // DROP TABS TO LISTS
   $(".tab-list li").droppable({
     drop: function(event, ui) {
@@ -278,17 +281,15 @@ function screenshotApply() {
       chrome.tabs.remove(parseInt(tabId));
     }
   });
-
-  $('.panel').mouseup(function() {
-    currSelectedTab = $(this).attr('tabid');
-    console.debug(currSelectedTab);
-  });
 }
+
 
 /* ===================================================================
  *                        Tab Expose
- * ================================================================= */
- function populateTabExpose() {
+ * ================================================================= 
+ */
+
+function populateTabExpose() {
   var openTabs = new Array();
   chrome.tabs.query({}, function(tabs) {
     $('ul#grid-view').css('display', 'none');
@@ -354,7 +355,7 @@ function getFaviconUrl(tab) {
 }
 
 function getScreenshotUrl(tab) {
-  return;// 'http://api.snapito.com/free/mc/' + parseUri(tab.url).host;
+  return 'http://api.snapito.com/free/mc/' + parseUri(tab.url).host;
 }
 
 function groupByWindow(tabs) {
