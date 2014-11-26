@@ -2,10 +2,14 @@
 $(document).foundation();
 
 
-/* 
+
+
+
+
 /* ===================================================================
  *                          GLOBAL VARIABLES
- * =================================================================== */
+ * =================================================================== 
+ */
 
 var openTabs = new Array();
 var categories = new Array();
@@ -34,9 +38,9 @@ function postOpenTabs() {
     console.log(openTabs[i].id)
     console.debug(openTabs[i]);
   }
-  chrome.storage.sync.set({'open': openTabs}, function() {
-    // doing nothing after we set
-  });
+  // chrome.storage.sync.set({'open': openTabs}, function() {
+  //   // doing nothing after we set
+  // });
 }
 
 // get open tabs - search through chrome and look at 'open' key 
