@@ -29,6 +29,7 @@ $(document).ready(function() {
         $("#snoozeModal").foundation('reveal', 'open');
     });
 
+    // Deleting Categories
     $(".delete-category").click(function() {
         $("#deleteCategoryModal").foundation('reveal','open');
     });
@@ -121,6 +122,7 @@ function showGridView(categoryName) {
     console.log("viewing category:"+categoryName);
 }
 
+// Delete list functionality
 var listDelete = null;
 function makeRemovable() {
     $(".delete-category").click(function() {
@@ -128,8 +130,6 @@ function makeRemovable() {
         listDelete = $(this);
     });
 }
-
-// Delete list functionality
 $("#deleteListButton").click(function() {
     if (listDelete) {
         $("#deleteListModal").foundation('reveal','close');
@@ -166,20 +166,21 @@ function saveNewCategory() {
 function screenshotApply() {
     // Go to clicked tab
     $(".screenshot-wrapper").click(function() {
-        var tabId = parseInt($(this).attr('tabId'));
-        var winId = parseInt($(this).attr('windowId'));
-        chrome.tabs.update(tabId, {active: true});
-        chrome.windows.update(winId, {focused: true});
-        console.log("updated screen to other tab");
+        if (!beingDragged) {
+            var tabId = parseInt($(this).attr('tabId'));
+            var winId = parseInt($(this).attr('windowId'));
+            chrome.tabs.update(tabId, {active: true});
+            chrome.windows.update(winId, {focused: true});
+            console.log("updated screen to other tab");
+        }
     });
 
-    // Close window button
+    // Close window button and functionality
     var currWindow = null;
     $(".close-window").click(function() {
         $("#deleteCategoryModal").foundation('reveal','open');
         currWindow = $(this).parent().parent();
     });
-
     $("#deleteCategoryButton").click(function() {
         $("#deleteCategoryModal").foundation('reveal','close');
         if (currWindow) {
@@ -187,27 +188,27 @@ function screenshotApply() {
             chrome.windows.remove(parseInt(winClose), function() {
                 currWindow.parent().remove();
             });
+            currWindow.remove();
+            populateTabExpose();
             currWindow = null;
         }
     });
 
     // make tabs draggable
+    var draggable = null;
+    var beingDragged = false;
     $('.screenshot-wrapper').draggable({
         revert: "invalid",
         revertDuration: 200,
         scroll: false,
         start: function(event, ui) {
-            $(this).css('z-index', 100);
-            $(this).css('opacity', 0.5);
+            draggable = $(this);
+            draggable.css('opacity', 0.5).css('z-index',999);
+            beingDragged = true;
         },
         stop: function(event, ui) {
-            // if (dropped===true) {
-            //   // $(this).remove();
-            // } else {
-
-            // }
-            $(this).css('z-index', 0);
-            $(this).css('opacity', 1);
+            draggable.css('opacity',1);
+            beingDragged = false;
         }
     });
 
@@ -216,43 +217,38 @@ function screenshotApply() {
     // drop tabs to other windows
     $(".window").droppable({
         drop: function(event, ui) {
+            dropped = true;
+            console.log("I WAS DROPPED!");
             var toWindow = $(this);
             var toWindowId = parseInt(toWindow.attr('windowId'));
-            var draggable = $(ui.draggable);
-            var tabId = parseInt(draggable.attr('tabId'));
+            var dragged = $(ui.draggable);
+            var tabId = parseInt(dragged.attr('tabid'));
 
             // update chrome
             // if dropped into the NEW WINDOW
-            var currWindow = $(this);
-            if(currWindow.attr('id') === 'new-window') {
-                // chrome.storage.sync.get(tabId.toString(), function(tab) {
-                //   var thisTab = tab[tabId];
-                //   console.log(thisTab);
-                //   console.log(thisTab.url);
-                // });
+            if(toWindow.attr('id') === 'new-window') {
 
                 // Move tab
                 chrome.windows.create({tabId: tabId, focused: false});
 
                 // convert this "new window div" to a regular window div
                 var newWindowHtml = currWindow.parent().html();
-                prevNumber = currWindow.parent().prev().children('.window').attr('count');
+                var prevNumber = currWindow.parent().prev().children('.window').attr('count');
                 var newNumber = parseInt(prevNumber) + 1;
                 currWindow.attr('count', newNumber);
                 currWindow.children().children('.window-title').html("Window " + newNumber);
                 currWindow.removeAttr('id', 'new-window'); // colors should update
 
                 $(this).parent().parent().append('<li>'+newWindowHtml+'</li>');
-                toWindow = $(this);
 
             } else {
                 // if dropped into an existing window, simply move the tab
                 chrome.tabs.move(tabId, {windowId: toWindowId, index: -1});
             }
 
-            // update list view
-            draggable.parent().remove();
-            toWindow.children(".window-tabs").append('<li>'+draggable.html()+'</li>');
+            // update list view html
+            dragged.parent().remove();
+            toWindow.children(".window-tabs").append('<li>'+dragged.html()+'</li>');
 
             populateTabExpose();
         }
@@ -273,8 +269,8 @@ function makeDroppable() {
 
             // add this tag to the list
             var category = $(this).attr('id');
-            var draggable = $(ui.draggable);
-            var tabId = draggable.attr('tabId');
+            var dragged = $(ui.draggable);
+            var tabId = dragged.attr('tabId');
 
             // If tab is dropped over snooze button, show modal
             if (category === 'snoozeButton') {
@@ -282,7 +278,8 @@ function makeDroppable() {
             }
 
             else if($(this).attr('class') === 'ui-droppable') {
-                addTabToCategory(category, tabId);
+//                addTabToCategory(category, tabId);
+                console.log("dropped into " + category);
             }
 
             else {
@@ -291,10 +288,12 @@ function makeDroppable() {
             }
 
             // Get rid of tab on expose
-            draggable.parent().remove();
+            dragged.parent().remove();
 
             // Actually close the tab on chrome
             chrome.tabs.remove(parseInt(tabId));
+
+            populateTabExpose();
         }
     });
 }
@@ -376,6 +375,7 @@ function getFaviconUrl(tab) {
 }
 
 function getScreenshotUrl(tab) {
+    //TODO: allow for screenshots here
     return;// 'http://api.snapito.com/free/mc/' + parseUri(tab.url).host;
 }
 
