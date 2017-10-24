@@ -62,7 +62,7 @@ function handleAddCategories() {
     $("#tab-categories li:last-child").click(function() {
         categoryName = $(this).attr('id');
         openCategoryTabs(categoryName);
-        showGridView(categoryName);
+        // showGridView(categoryName);
     });
     $('#tab-categories li').click(function() {
         if ($(this).attr('id') === 'open') {
@@ -85,40 +85,27 @@ function addCategoryToPanel(newCategory) {
 }
 
 function openCategoryTabs(categoryName) {
-    var urls           = new Array();
-    // chrome.storage.sync.get(categoryName, function(category){
-    //   console.debug(categoryName);
-    //   console.debug(category);
-    //   console.debug(category[categoryName]);
-
-    //   var allTabs = category[categoryName];
-
-    //   chrome.storage.sync.get(allTabs, function(tab) {
-    //     var tabIndex;
-    //     for(var i=0; i < allTabs.length; i++) {
-    //       tabIndex = allTabs[i];
-    //       urls.push(tab[tabIndex].url);
-    //     }
-    //     createTabNewWindow(urls);
-    //   });
-    // });
+    chrome.storage.sync.get(categoryName, function(category){
+      var allTabs = category[categoryName];
+      createTabNewWindow(allTabs);
+    });
 }
 
 function showGridView(categoryName) {
-    // chrome.storage.sync.get(categoryName, function(category) {
-    //   var tabIds = category[categoryName];
-
-    //   chrome.storage.sync.get(tabIds, function(tab) {
-    //     var tabArray = new Array();
-    //     for (var tabId in tab) {
-    //       tabArray.push(tab[tabId]);
-    //     }
-    //     $('ul#grid-view').html(getGridHtml(tabArray));
-    //     $('ul#grid-view').css('display', 'block');
-    //     $('#list-mode').addClass('disabled');
-    //     $('ul#list-view').css('display', 'none');
-    //   })
-    // });
+    chrome.storage.sync.get(categoryName, function(category) {
+      var urls = category[categoryName];
+      $('ul#grid-view').css('display', 'none').html(getGridHtmlForList(tabs));
+      // chrome.storage.sync.get(tabIds, function(tab) {
+      //   var tabArray = new Array();
+      //   for (var tabId in tab) {
+      //     tabArray.push(tab[tabId]);
+      //   }
+      //   $('ul#grid-view').html(getGridHtml(tabArray));
+      //   $('ul#grid-view').css('display', 'block');
+      //   $('#list-mode').addClass('disabled');
+      //   $('ul#list-view').css('display', 'none');
+      // })
+    });
     console.log("viewing category:"+categoryName);
 }
 
@@ -271,6 +258,7 @@ function makeDroppable() {
             var category = $(this).attr('id');
             var dragged = $(ui.draggable);
             var tabId = dragged.attr('tabId');
+            var tabURL = dragged.attr('tabURL');
 
             // If tab is dropped over snooze button, show modal
             if (category === 'snoozeButton') {
@@ -278,7 +266,7 @@ function makeDroppable() {
             }
 
             else if($(this).attr('class') === 'ui-droppable') {
-//                addTabToCategory(category, tabId);
+                addTabToCategory(category, tabId, tabURL);
                 console.log("dropped into " + category);
             }
 
@@ -301,14 +289,13 @@ function makeDroppable() {
 
 /* ===================================================================
  *                        Tab Expose
- * ================================================================= 
+ * =================================================================
  */
 
 function populateTabExpose() {
     var openTabs = new Array();
     chrome.tabs.query({}, function(tabs) {
-        $('ul#grid-view').css('display', 'none')
-            .html(getGridHtml(tabs));
+        $('ul#grid-view').css('display', 'none').html(getGridHtml(tabs));
 
         //var fullListHtml = getListHtml(groupByWindow(tabs));
         var windowDiv = $('ul#list-view').children().children('#new-window');
@@ -345,7 +332,7 @@ function getListHtml(windows) {
 
 function getListHtmlForTab(tab) {
     var faviconUrl = getFaviconUrl(tab);
-    var html = '<li><div class="screenshot-wrapper" tabId='+tab.id+' windowId='+tab.windowId+'><img class="faviconImage inline" src="'+faviconUrl+'"><div class="title inline truncate">' + tab.title.substring(0,30) + '</div></div></li>';
+    var html = '<li><div class="screenshot-wrapper" tabURL="'+tab.url+'" tabId='+tab.id+' windowId='+tab.windowId+'><img class="faviconImage inline" src="'+faviconUrl+'"><div class="title inline truncate">' + tab.title.substring(0,30) + '</div></div></li>';
     return html;
 }
 
@@ -359,8 +346,19 @@ function getGridHtml(tabs) {
 
 function getGridHtmlForTab(tab) {
     var faviconUrl = getFaviconUrl(tab);
-    var html = '<li><div class="screenshot" style="background-image:url('+getScreenshotUrl(tab)+');"><div class="screenshot-wrapper truncate" tabId='+tab.id+' windowId='+tab.windowId+'><img class="faviconImage inline" src="'+faviconUrl+'">' + tab.title.substring(0,30) + '</div></div></li>';
+    var html = '<li><div class="screenshot" style="background-image:url('+getScreenshotUrl(tab)+');"><div class="screenshot-wrapper truncate" tabURL="'+tab.url+'" tabId='+tab.id+' windowId='+tab.windowId+'><img class="faviconImage inline" src="'+faviconUrl+'">' + tab.title.substring(0,30) + '</div></div></li>';
     return html;
+}
+
+function getGridHtmlForList(urls) {
+  var html = "";
+  for (var i = 0; i < urls.length; i++) {
+    html += getGridHtmlForListTab(urls[i]);
+  }
+  return html;
+}
+function getGridHtmlForListTab(url) {
+  return '<li><div class="screenshot-wrapper truncate">' + url + '</div></li>';
 }
 
 function getFaviconUrl(tab) {

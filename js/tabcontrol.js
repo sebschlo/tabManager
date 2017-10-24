@@ -8,7 +8,7 @@ $(document).foundation();
 
 /* ===================================================================
  *                          GLOBAL VARIABLES
- * =================================================================== 
+ * ===================================================================
  */
 
 var openTabs = new Array();
@@ -20,66 +20,11 @@ var currSelectedTab;
  * =================================================================== */
 
 function createTab(url) {
-  console.log("creating tab");
-  console.log(url);
   chrome.tabs.create({'url': url});
 }
 
-function createTabNewWindow(url, windowId) {
-  console.log("creating tab in new window");
-  console.log(url);
-  chrome.tabs.create({'url': url, 'windowId': windowId});
-}
-
-function postOpenTabs() {
-  for (i = 0; i < openTabs.length; i++) {
-    // adding "open" property to each of the openTabs
-    openTabs[i]["open"] = true;
-    console.log(openTabs[i].id)
-    console.debug(openTabs[i]);
-  }
-  // chrome.storage.sync.set({'open': openTabs}, function() {
-  //   // doing nothing after we set
-  // });
-}
-
-// get open tabs - search through chrome and look at 'open' key 
-function getOpenTabs() {
-  chrome.storage.sync.get('open', function(data){
-    console.debug(data);
-  }); 
-}
-
-function debugOpenTabs() {
-  console.debug("Open Tabs: " + openTabs);
-}
-
-// Get all the currently open tabs 
-function getCurrTabs() {
-  chrome.tabs.query({}, function(tabs) {
-    for (var i = 0; i < tabs.length; i++) {
-       openTabs[i] = tabs[i];
-    }
-
-    for (i = 0; i < openTabs.length; i++) {
-      // adding "open" property to each of the openTabs
-      openTabs[i]["open"] = true;
-    }
-    // getTabScreenshot(openTabs);
-  });
-  // return currOpen;
-}
-
-function postTabs(key) {
-  console.debug("key: " + key + " open tabs: " + openTabs);
-  chrome.storage.sync.set({'curr': openTabs}, function() {});
-}
-
-function getTabs(key) {
-  console.debug("keyword is: " + key);
-  chrome.storage.sync.get(key, function(data){
-    console.debug(data);
-  });
+function createTabNewWindow(urls) {
+  chrome.windows.create({'url': urls})
 }
 
 function clear() {
@@ -90,7 +35,7 @@ function clear() {
  *                        CATEGORIES CONTROL
  * =================================================================== */
 
-/* 
+/*
  * categories will always be stored in chrome.storage with key of 'categories'
  * WILL BE DEPRECATED SOON
  */
@@ -113,18 +58,13 @@ function getCatList(callback) {
   });
 }
 
-// function createCategory(category) {
-//   categories.category = new Array(); 
-//   console.debug('added category. category array is now: ' + categories);
-// }
-
-function addTabToCategory(category, tabId) {
+function addTabToCategory(category, tabId, url) {
   chrome.storage.sync.get(category, function(curr){ // category is specific...
     // category is empty, no tabs have been placed in it yet - initialize array
     console.debug(curr);
     if(_.isEmpty(curr)) {
       console.debug('first entry');
-      curr = new Array(); 
+      curr = new Array();
     }
     else {
       console.debug('not first entry');
@@ -132,7 +72,7 @@ function addTabToCategory(category, tabId) {
       console.debug(curr);
       curr = curr[category];
     }
-    curr.push(tabId);
+    curr.push(url);
 
     pair = {};
     pair[category] = curr;
@@ -143,6 +83,7 @@ function addTabToCategory(category, tabId) {
     chrome.storage.sync.set(pair, function(){});
   });
 }
+
 
 function deleteCategory(category) {
   chrome.storage.sync.get(category, function(curr) {
